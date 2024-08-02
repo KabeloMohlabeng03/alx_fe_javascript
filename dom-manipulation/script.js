@@ -62,7 +62,7 @@ async function syncQuotesWithServer() {
   filterQuotes();
 
   // Notify user about sync
-  alert('Quotes synced with server. Conflicts resolved if any.');
+  alert('Quotes synced with server!');
 }
 
 // Merge local and server quotes
