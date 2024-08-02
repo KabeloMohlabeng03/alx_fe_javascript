@@ -5,6 +5,9 @@ let quotes = [
   { text: "Your time is limited, so don't waste it living someone else's life.", category: "Life" }
 ];
 
+// Mock server URL
+const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts';
+
 // Load quotes from local storage
 function loadQuotes() {
   const storedQuotes = localStorage.getItem('quotes');
@@ -16,6 +19,44 @@ function loadQuotes() {
 // Save quotes to local storage
 function saveQuotes() {
   localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Fetch quotes from server
+async function fetchQuotesFromServer() {
+  try {
+      const response = await fetch(SERVER_URL);
+      const data = await response.json();
+      return data.map(item => ({ text: item.title, category: "Server" })); // Assuming title as quote text and a default category
+  } catch (error) {
+      console.error('Failed to fetch quotes from server:', error);
+      return [];
+  }
+}
+
+// Sync quotes with server
+async function syncQuotesWithServer() {
+  const serverQuotes = await fetchQuotesFromServer();
+  const mergedQuotes = mergeQuotes(quotes, serverQuotes);
+
+  // Update local quotes
+  quotes = mergedQuotes;
+  saveQuotes();
+  populateCategories();
+  filterQuotes();
+
+  // Notify user about sync
+  alert('Quotes synced with server. Conflicts resolved if any.');
+}
+
+// Merge local and server quotes
+function mergeQuotes(localQuotes, serverQuotes) {
+  const merged = [...serverQuotes];
+  localQuotes.forEach(localQuote => {
+      if (!serverQuotes.some(serverQuote => serverQuote.text === localQuote.text)) {
+          merged.push(localQuote);
+      }
+  });
+  return merged;
 }
 
 // Populate the category filter dropdown
@@ -177,3 +218,6 @@ document.getElementById('exportButton').addEventListener('click', exportToJsonFi
 
 // Create and add the form for adding new quotes to the DOM
 createAddQuoteForm();
+
+// Sync quotes with server every 30 seconds
+setInterval(syncQuotesWithServer, 30000);
