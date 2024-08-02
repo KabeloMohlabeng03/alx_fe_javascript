@@ -19,11 +19,14 @@ function saveQuotes() {
 }
 
 // Populate the category filter dropdown
-function populateCategoryFilter() {
+function populateCategories() {
   const categoryFilter = document.getElementById('categoryFilter');
   const categories = [...new Set(quotes.map(quote => quote.category))];
 
+  // Clear existing categories
   categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+
+  // Add new categories
   categories.forEach(category => {
       const option = document.createElement('option');
       option.value = category;
@@ -97,7 +100,7 @@ function addQuote() {
       saveQuotes();
 
       // Populate category filter with new categories
-      populateCategoryFilter();
+      populateCategories();
 
       // Clear input fields
       document.getElementById('newQuoteText').value = '';
@@ -154,7 +157,7 @@ function importFromJsonFile(event) {
       const importedQuotes = JSON.parse(event.target.result);
       quotes.push(...importedQuotes);
       saveQuotes();
-      populateCategoryFilter();
+      populateCategories();
       alert('Quotes imported successfully!');
   };
   fileReader.readAsText(event.target.files[0]);
@@ -164,7 +167,7 @@ function importFromJsonFile(event) {
 loadQuotes();
 
 // Populate the category filter with existing categories
-populateCategoryFilter();
+populateCategories();
 
 // Event listener for "Show New Quote" button
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
